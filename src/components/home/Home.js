@@ -60,7 +60,9 @@ function Home() {
           if(cabe(numSub,clase)){
             const mascara = calcularMascara(clase,numSub);
             let red = calcularDireccionRed(clase,direccion);
-            let nuevos = crearSubredes(red,numSub,mascara);
+            const brodcast = direccionBrodcast(red,clase);
+            let nuevos = crearSubredes(red,numSub,mascara,brodcast);
+
             setData(nuevos);
           }else{
             setValido("Eres ambicisioso pero no caben tantas subredes en tu direccion IP, prueba otra");
@@ -75,7 +77,7 @@ function Home() {
     }
   }
 
-  const crearSubredes = (red,numSub,mascara) =>{
+  const crearSubredes = (red,numSub,mascara,brodcast) =>{
     let nuevosDatos = [];
     const tam = 2 **(7-calcularBitsSub(numSub));
     for(let i = 0; i < numSub; i++){
@@ -86,7 +88,7 @@ function Home() {
           direccion: calcularedActual(red,numSub,i).join("."),
           pip:calcularPrimera(red,numSub,i).join("."),
           uip: calcularUltima(red,numSub,i+1).join("."),
-          brodcast:"as",
+          brodcast:brodcast.join("."),
           mascara:mascara.join(".")
         })
     }
@@ -144,8 +146,9 @@ function Home() {
   const checarDireccion = (direccion) =>{
     for(let i =0 ; i<direccion.length; i++){
       const valid = /^\d+$/.test(direccion[i]);
-      if(!valid || (direccion[i].length < 0 && direccion[i].length > 4)){
-        setValido("Direccion no valida ingresa otra con el formato punteado puto");
+      if(!valid || (direccion[i].length < 0 && direccion[i].length > 4) || direccion[i]>255){
+        setValido("Direccion no valida ingresa otra con el formato punteado");
+        setData([]);
         return false;
       }
     }
@@ -169,6 +172,7 @@ function Home() {
     else if(primerO > 240 && primerO <= 255) clase = "E"
     else {
       setValido("Red no valida ingresa otra");
+      setData([]);
       return "F"
     }
     setValido("Red Clase " +clase+ " con " + bits + " bit para subnetting");
@@ -193,7 +197,6 @@ function Home() {
 
   const prestarAhost = (mascara, sub) =>{
     let suma = 0;
-    console.log(sub)
     for(let i = 0; i < sub; i++ ){
       suma += 2**(7-i);
     }
@@ -219,25 +222,36 @@ function Home() {
     return numero;
   }
 
+  const direccionBrodcast = (red,clase) =>{
+    let nue = [];
+    red.map(e=> nue.push(e));
+    if(clase === "A"){
+      nue[1,2,3] = 255
+    }else if(clase ==="B"){
+      nue[2,3] = 255
+    }else if(clase==="C"){
+      nue[3] = 255
+    }
+    return nue;
+  }
+
   return (
-    <div>
-      <h1>Bienvenido a calcular las direcciones ip</h1>
-      <h2> Cual direccion quieres usar? </h2>
-      <Form layout = 'horizontal'>
-        <Form.Item label="Direccion IP" name = "direccionIP">
+    <div className="negro">
+      <div className="todo">
+        <h1>Bienvenido a calcular las subredes de una Direccion IP</h1>
+        <h2> Cual direccion quieres usar? </h2>
+        <Form layout = 'vertical'>
+          <label> Direccion IP </label>
           <Input placeholder = "Ingresa tu direccion IP" name="direccionIP"
                   onChange={e => formedit(e)}/>
-        </Form.Item>
-        <Form.Item label="Numbero de Subredes" name = "numSub">
+          <label> Numero de Subredes </label>
           <Input placeholder = "Cuantas subredes deseas" name="numSub" type="number"
                   onChange = {e => formedit(e)}/>
-        </Form.Item>
-        <Form.Item>
           <Button type="primary" onClick={pushear} >Submit</Button>
-        </Form.Item>
-      </Form>
-      <h1>{valido}</h1>
-      <Table columns={columns} dataSource={data} />
+        </Form>
+        <h2>{valido}</h2>
+        <Table columns={columns} dataSource={data} />
+      </div>
     </div>
   );
 }

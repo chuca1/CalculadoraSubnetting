@@ -1,5 +1,4 @@
 @import '~antd/dist/antd.css';
-
 body {
   margin: 0;
   text-align: center;
@@ -7,8 +6,41 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-image: url("./images/fondo.jpg");
+  background-size: cover;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
+}
+
+.negro{
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100vw;
+  height: 70vh;
+}
+
+.todo{
+  background-color: navy;
+  color: white;
+  max-width: 80vw;
+  max-height: 40vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.todo h1,h2, label{
+  color: white;
+
+}
+.todo *{
+  margin: .2vh;
+  padding: none;
+}
+.ant-table-tbody > tr > td{
+  padding: 1.5vh;
 }
